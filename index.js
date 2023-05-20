@@ -59,7 +59,24 @@ app.delete('/toycars/:id',async(req,res)=>{
   const result=await toyCarCollection.deleteOne(query);
   res.send(result)
 })
+// patch method
 
+app.patch('/toycars/:id',async(req,res)=>{
+  const id=req.params.id;
+  const filter={_id:new ObjectId(id)}
+  const option={upsert: true}
+  const updating=req.body;
+  const carInfo={
+    $set:{
+   name: updating.name,
+   quantity:updating.quantity,
+   price:updating.price,
+   rating:updating.rating,
+   detail:updating.detail
+  }};
+  const result= await toyCarCollection.updateOne(filter,carInfo,option);
+  res.send(result)
+})
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
