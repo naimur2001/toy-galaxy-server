@@ -40,22 +40,13 @@ app.post('/toycars',async(req,res)=>{
   const result=await toyCarCollection.insertOne(carInfo);
   res.send(result)
 })
+
 // get method
 app.get('/toycars',async(req,res)=>{
-
-  const limit = parseInt(req.query.limit) || 20
-  const page= parseInt(req.query.page) || 0
-  const skip=page*limit
-    const searchQuery = req.query.search || '';
-      const query = searchQuery ? { name: { $regex: searchQuery, $options: 'i' } } : {};
-  const result=await toyCarCollection.find(query).skip(skip).limit(limit).toArray();
+  const result=await toyCarCollection.find().toArray();
   res.send(result)
 })
-// limit get method
-app.get('/totaltoycars',async(req,res)=>{
-  const result=await toyCarCollection.estimatedDocumentCount();
-  res.send({totaltoycars:result})
-})
+
 // detail get method
 app.get('/toycars/:id',async(req,res)=>{
   const id=req.params.id;
