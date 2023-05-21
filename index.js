@@ -31,7 +31,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+   client.connect();
     const toyCarCollection=client.db('toy-car-data').collection('toy-car-data')
     // post method
 app.post('/toycars',async(req,res)=>{
@@ -42,8 +42,19 @@ app.post('/toycars',async(req,res)=>{
 })
 // get method
 app.get('/toycars',async(req,res)=>{
-  const result=await toyCarCollection.find().toArray();
+
+  const limit = parseInt(req.query.limit) || 20
+  const page= parseInt(req.query.page) || 0
+  const skip=page*limit
+    const searchQuery = req.query.search || '';
+      const query = searchQuery ? { name: { $regex: searchQuery, $options: 'i' } } : {};
+  const result=await toyCarCollection.find(query).skip(skip).limit(limit).toArray();
   res.send(result)
+})
+// limit get method
+app.get('/totaltoycars',async(req,res)=>{
+  const result=await toyCarCollection.estimatedDocumentCount();
+  res.send({totaltoycars:result})
 })
 // detail get method
 app.get('/toycars/:id',async(req,res)=>{
