@@ -42,11 +42,19 @@ app.post('/toycars',async(req,res)=>{
 })
 
 // get method
-app.get('/toycars',async(req,res)=>{
-  const result=await toyCarCollection.find().toArray();
-  res.send(result)
-})
+app.get('/toycars', async (req, res) => {
+  const sortOption = req.query.sort;
 
+  let sortFilter = {};
+  if (sortOption === 'high') {
+    sortFilter = { price: -1 };
+  } else if (sortOption === 'low') {
+    sortFilter = { price: 1 };
+  }
+
+  const result = await toyCarCollection.find().sort(sortFilter).toArray();
+  res.send(result);
+});
 // detail get method
 app.get('/toycars/:id',async(req,res)=>{
   const id=req.params.id;
@@ -79,6 +87,14 @@ app.patch('/toycars/:id',async(req,res)=>{
   const result= await toyCarCollection.updateOne(filter,carInfo,option);
   res.send(result)
 })
+// sorting
+// app.get('/toycars', async (req, res) => {
+//   const options=req.body
+ 
+//   const result=await toyCarCollection.find({).sort({name:-1}).toArray();
+//   res.send(result)
+// });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
